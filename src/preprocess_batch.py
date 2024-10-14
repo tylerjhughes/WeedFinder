@@ -17,4 +17,4 @@ def Preprocess_batch(image_batch):
         return (image_batch - mean) / std
 
 if __name__ == '__main__':
-    preprocess()
+    Preprocess_batch()

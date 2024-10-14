@@ -28,4 +28,10 @@ class Map(object):
         return zone_centroids, zone_width
 
     def optimise_path(self):
+        '''
+        Numerically calculates all possible paths through each zone and finds the optimal (shortest) path
+        '''
+
+        
+
         pass
