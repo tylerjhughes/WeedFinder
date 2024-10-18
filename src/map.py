@@ -1,15 +1,17 @@
 import numpy as np
+import pandas as pd
 
 class Map(object):
 
-    def __init__(self, width, length, origin):
-        self.width = width
-        self.length = length
-        self.origin = origin
+    def __init__(self, map_bounds_path):
+        self.map_bounds = pd.read_csv(map_bounds_path)
+        self.width = self.map_bounds['x'].max() - self.map_bounds['x'].min()
+        self.length = self.map_bounds['y'].max() - self.map_bounds['y'].min()
+        self.origin = [0, 0]
 
     def zones(self, num_zones):
         '''
-        Devides the field into suqazones and returns their width
+        Divides the field into sub-zones and returns their width
         '''
 
         field_area = self.width * self.length
@@ -20,6 +22,7 @@ class Map(object):
         num_zones_length = int(self.length / zone_width)     
 
         zone_centroids = np.zeros((num_zones, 2))
+
         for i in range(num_zones_width):
             for j in range(num_zones_length):
                 zone_centroids[i * num_zones_length + j, 0] = (i + 0.5) * zone_width + self.origin[0]
@@ -31,7 +34,5 @@ class Map(object):
         '''
         Numerically calculates all possible paths through each zone and finds the optimal (shortest) path
         '''
-
         
-
         pass

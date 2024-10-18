@@ -11,13 +11,12 @@ class App(object):
     def __init__(self):
         self.model = YOLO('../data/yolov11n.pt')
         self.drone = Drone()
-        self.path = iter(Map().optimise_path())
+        map = Map('../data/map_bounds.csv')
+        self.path = iter(map.optimise_path())
         self.results = pd.DataFrame(columns=['weed class', 'weed coords', 'model score'])
 
     def rotate(self, points, centre_x, centre_y, angle, degrees=True):
         '''
-        Description
-        ---
         Rotates the points by the angle
         '''
 
@@ -30,7 +29,7 @@ class App(object):
 
     def pixel2coords(self, pixel_idx_x, pixel_idx_y):
         '''
-        Calculates the physical positions of pixels in an image from the drone's location, height and field of view
+        Calculates the physical positions of pixels in an image from the drone's location, height, heading, and field of view
         '''
         dx = self.drone.height * np.tan(self.drone.fov * np.pi / (2 * 180)) 
         coord_grid = np.meshgrid(np.linspace(-dx, dx, 640)+self.drone.x, np.linspace(-dx, dx, 640)+self.drone.y)
@@ -45,7 +44,6 @@ class App(object):
         ''' 
         Sends the drones current position and results from the YOLO model to server
         '''
-        
         url = 'webapp_url'
 
         data = {
@@ -55,9 +53,12 @@ class App(object):
         
         try: 
             request.post(url, data)
-        except Exception as e:
+        except Exception:
             wait(5)
-            request.post(url, data)
+            try:
+                request.post(url, data)
+            except Exception as e:
+                print(f"Error sending post request: {e}")
 
     def run(self):
         
@@ -79,6 +80,7 @@ class App(object):
             self.send_results(weed_coords, drone_coords)
         else: 
                 self.drone.return_home()
+                
 
                 
 if __name__ == "__main__":

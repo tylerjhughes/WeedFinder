@@ -5,21 +5,17 @@ from preprocess_batch import Preprocess_batch
 
 def train_model():
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Using device: {device}")
 
     model = YOLO('yolov11n') 
-    model.to(device)
 
-    dataset = np.load('data/custom_dataset.npz')
-    dataset_preprocessed = Preprocess_batch(dataset)
+    dataset = np.load('data/dataset_preprocessed.yaml')
 
     model.train(
-        data=dataset_preprocessed,  # Path to dataset YAML
+        data=dataset,  # Path to dataset YAML
         epochs=50,  
         imgsz=640,  
         batch=16,  
-        device=device
+        device='cuda'
     )
 
     model.export(format='onnx')
